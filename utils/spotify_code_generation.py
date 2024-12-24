@@ -9,17 +9,9 @@ import time
 from PIL import Image
 import vtracer
 
-def raster_to_svg(input_image_path="spotify_code.png", output_svg_path="test_file.png", colormode="binary"):
-
-    vtracer.convert_image_to_svg_py(input_image_path, output_svg_path)    
-    
-
-# Example usage
-raster_to_svg("spotify_code.png", "spotify_code_svg.svg")
-
 def generate_spotify_code(spotify_link, download_path = "spotify_code.png"):
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     driver = webdriver.Chrome(options = options)
 
     driver.get("https://www.spotifycodes.com/#create")
@@ -29,15 +21,14 @@ def generate_spotify_code(spotify_link, download_path = "spotify_code.png"):
 
     # Click the cookie accept cookie button
     
-    try:
+    #try:
         # time.sleep(3)
         # accept_cookies_button = driver.find_element(By.ID, "onetrust-accept-btn-handler")
-        accept_cookies_button = standard_wait.until(EC.presence_of_element_located((By.ID, "onetrust-accept-btn-handler")))
-
-    except:
-        print("No cookies button found")
-
+    accept_cookies_button = standard_wait.until(EC.presence_of_element_located((By.ID, "onetrust-accept-btn-handler")))
     accept_cookies_button.click()
+
+    # except:
+    #     print("No cookies button found")
 
     spotify_link_input = standard_wait.until(EC.presence_of_element_located((By.ID, "playlist-code")))
     spotify_link_input.clear()
@@ -81,8 +72,7 @@ def generate_spotify_code(spotify_link, download_path = "spotify_code.png"):
 
 
 def main():
-    # generate_spotify_code("https://open.spotify.com/track/6efJhdddUNkrpjl0NCzp2G?si=287f48c72a034737")
-    raster_to_svg()
+    generate_spotify_code("https://open.spotify.com/track/6efJhdddUNkrpjl0NCzp2G?si=287f48c72a034737", "assets/spotify_code.png")
 
 
 if __name__ == "__main__":

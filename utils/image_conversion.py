@@ -86,4 +86,4 @@ def png_to_svg_with_holes(png_path, svg_path, threshold=128,
 
 # Example usage
 if __name__ == "__main__":
-    png_to_svg_with_holes("spotify_code.png", "output.svg", threshold=128)
+    png_to_svg_with_holes("assets/spotify_code.png", "assets/output.svg", threshold=128)
