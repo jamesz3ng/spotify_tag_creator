@@ -6,10 +6,9 @@ def run(context):
     ui = None
     try:
         app = adsk.core.Application.get()
-        ui  = app.userInterface
-        ui.messageBox('Hello script')
-
-        design = adsk.fusion.Design.cast(app.activeProduct)
+        ui = app.userInterface
+        product = app.activeProduct
+        design = adsk.fusion.Design.cast(product)
         if not design:
             ui.messageBox("A Fusion design must be active.")
             return
@@ -17,37 +16,45 @@ def run(context):
         root_comp = design.rootComponent
         sketches = root_comp.sketches
 
-        # 1) Create & Extrude a rectangle on the XY plane
+        # 1) Create a new sketch on the XY plane
         xy_plane = root_comp.xYConstructionPlane
         rect_sketch = sketches.add(xy_plane)
-        
+
+        # 2) Draw the rectangle lines
         lines = rect_sketch.sketchCurves.sketchLines
         p1 = adsk.core.Point3D.create(0, 0, 0)
         p2 = adsk.core.Point3D.create(8.5, 0, 0)
-        p3 = adsk.core.Point3D.create(8.5,2, 0)
+        p3 = adsk.core.Point3D.create(8.5, 2, 0)
         p4 = adsk.core.Point3D.create(0, 2, 0)
-        
-        lines.addByTwoPoints(p1, p2)
-        lines.addByTwoPoints(p2, p3)
-        lines.addByTwoPoints(p3, p4)
-        lines.addByTwoPoints(p4, p1)
 
+        line1 = lines.addByTwoPoints(p1, p2)
+        line2 = lines.addByTwoPoints(p2, p3)
+        line3 = lines.addByTwoPoints(p3, p4)
+        line4 = lines.addByTwoPoints(p4, p1)
+
+        # 3) Add sketch fillets at each corner
+        corner_radius = 0.25
+        arcs = rect_sketch.sketchCurves.sketchArcs
+        arcs.addFillet(line1, p2, line2, p2, corner_radius)
+        arcs.addFillet(line2, p3, line3, p3, corner_radius)
+        arcs.addFillet(line3, p4, line4, p4, corner_radius)
+        arcs.addFillet(line4, p1, line1, p1, corner_radius)
+
+        # 4) Extrude the resulting profile
         if rect_sketch.profiles.count == 0:
             ui.messageBox("No closed profile found. Cannot extrude.")
             return
+        profile = rect_sketch.profiles.item(0)
 
-        rect_profile = rect_sketch.profiles.item(0)
         extrudes = root_comp.features.extrudeFeatures
         ext_input = extrudes.createInput(
-            rect_profile, 
+            profile,
             adsk.fusion.FeatureOperations.NewBodyFeatureOperation
         )
-
         distance = adsk.core.ValueInput.createByString("2.75 mm")
         ext_input.setDistanceExtent(False, distance)
         extrude_feature = extrudes.add(ext_input)
-
-        # 2) Create a new sketch on the *top face* of that extrusion
+       # 2) Create a new sketch on the *top face* of that extrusion
         top_face = extrude_feature.endFaces[0]
         svg_sketch = sketches.add(top_face)
 
@@ -113,10 +120,6 @@ def run(context):
 
         hole_ext_input.setAllExtent(adsk.fusion.ExtentDirections.NegativeExtentDirection)
         extrudes.add(hole_ext_input)
-
-
-        
-
 
         ui.messageBox("Extruded the first SVG profile by 1 mm.")
 
