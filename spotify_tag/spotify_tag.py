@@ -94,6 +94,30 @@ def run(context):
             new_ext_input.setDistanceExtent(False, distance_val)
             extrudes.add(new_ext_input)
 
+        # Create keychain hole
+
+        hole_sketch = sketches.add(top_face)
+        hole_location = (0.315, 1)
+        center_pt = adsk.core.Point3D.create(hole_location[0], hole_location[1], 0)
+        circle_radius = 0.15
+
+        circles = hole_sketch.sketchCurves.sketchCircles
+        circle = circles.addByCenterRadius(center_pt, circle_radius)
+
+        hole_profile = hole_sketch.profiles.item(1)
+
+        hole_ext_input = extrudes.createInput(
+            hole_profile,
+            adsk.fusion.FeatureOperations.CutFeatureOperation
+        )
+
+        hole_ext_input.setAllExtent(adsk.fusion.ExtentDirections.NegativeExtentDirection)
+        extrudes.add(hole_ext_input)
+
+
+        
+
+
         ui.messageBox("Extruded the first SVG profile by 1 mm.")
 
         ui.messageBox(f"SVG Sketch has {count_svg_profiles} profile(s).")
