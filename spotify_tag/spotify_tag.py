@@ -59,14 +59,12 @@ def run(context):
         # Point the import at the new top-face sketch
         svg_import_options.targetBaseOrSketch = svg_sketch
 
-        # --- OPTION B: Use a transform matrix for translation + scaling ---
-        #
         # Create a matrix and do both translation & scale
         transform = adsk.core.Matrix3D.create()
         
         # Set a uniform scale factor (e.g., 0.5 = 50%)
         scale_factor = 0.5
-        transform.setCell(0, 0, scale_factor)  # X scale
+        transform.setCell(0, 0, scale_factor)  # X scale - negative scale factor for mirroring across the axis
         transform.setCell(1, 1, scale_factor)  # Y scale
         transform.setCell(2, 2, scale_factor)  # Z scale - not used
         
@@ -79,10 +77,26 @@ def run(context):
         # 4) Import the SVG into the top sketch
         import_manager.importToTarget(svg_import_options, svg_sketch)
 
-        # new_profile = profiles.item(1)
+        svg_profiles = svg_sketch.profiles
+        count_svg_profiles = svg_profiles.count
 
+        # new_profile = svg_profiles.item(24)
 
-        ui.messageBox("Rectangle extruded, and SVG placed on top face with custom transform.")
+        for i in range(1, 25):
+            prof = svg_profiles.item(i)
+            extrudes = root_comp.features.extrudeFeatures
+            new_ext_input = extrudes.createInput(
+                prof,
+                adsk.fusion.FeatureOperations.NewBodyFeatureOperation
+            )
+
+            distance_val = adsk.core.ValueInput.createByString("1 mm")
+            new_ext_input.setDistanceExtent(False, distance_val)
+            extrudes.add(new_ext_input)
+
+        ui.messageBox("Extruded the first SVG profile by 1 mm.")
+
+        ui.messageBox(f"SVG Sketch has {count_svg_profiles} profile(s).")
 
     except:
         if ui:
