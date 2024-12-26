@@ -2,6 +2,6 @@
 *.png
 *.svg
 *test.py
-
-
+*.manifest
+*.json
 assets/
