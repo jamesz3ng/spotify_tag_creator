@@ -121,9 +121,9 @@ def run(context):
         hole_ext_input.setAllExtent(adsk.fusion.ExtentDirections.NegativeExtentDirection)
         extrudes.add(hole_ext_input)
 
-        ui.messageBox("Extruded the first SVG profile by 1 mm.")
+        # ui.messageBox("Extruded the first SVG profile by 1 mm.")
 
-        ui.messageBox(f"SVG Sketch has {count_svg_profiles} profile(s).")
+        # ui.messageBox(f"SVG Sketch has {count_svg_profiles} profile(s).")
 
     except:
         if ui:

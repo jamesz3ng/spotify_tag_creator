@@ -11,7 +11,7 @@ import vtracer
 
 def generate_spotify_code(spotify_link, download_path = "spotify_code.png"):
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     driver = webdriver.Chrome(options = options)
 
     driver.get("https://www.spotifycodes.com/#create")
