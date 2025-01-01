@@ -24,8 +24,8 @@ def run(context):
         lines = rect_sketch.sketchCurves.sketchLines
         p1 = adsk.core.Point3D.create(0, 0, 0)
         p2 = adsk.core.Point3D.create(8.5, 0, 0)
-        p3 = adsk.core.Point3D.create(8.5, 2, 0)
-        p4 = adsk.core.Point3D.create(0, 2, 0)
+        p3 = adsk.core.Point3D.create(8.5, -2, 0)
+        p4 = adsk.core.Point3D.create(0, -2, 0)
 
         line1 = lines.addByTwoPoints(p1, p2)
         line2 = lines.addByTwoPoints(p2, p3)
@@ -72,7 +72,7 @@ def run(context):
         # Set a uniform scale factor (e.g., 0.5 = 50%)
         scale_factor = 0.5
         transform.setCell(0, 0, scale_factor)  # X scale - negative scale factor for mirroring across the axis
-        transform.setCell(1, 1, scale_factor)  # Y scale
+        transform.setCell(1, 1, -scale_factor)  # Y scale
         transform.setCell(2, 2, scale_factor)  # Z scale - not used
         
         # Shift the sketch down for hole
@@ -85,7 +85,6 @@ def run(context):
         import_manager.importToTarget(svg_import_options, svg_sketch)
 
         svg_profiles = svg_sketch.profiles
-        count_svg_profiles = svg_profiles.count
 
         # new_profile = svg_profiles.item(24)
 
@@ -104,7 +103,7 @@ def run(context):
         # Create keychain hole
 
         hole_sketch = sketches.add(top_face)
-        hole_location = (0.315, 1)
+        hole_location = (0.315, -1)
         center_pt = adsk.core.Point3D.create(hole_location[0], hole_location[1], 0)
         circle_radius = 0.15
 
